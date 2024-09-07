@@ -10,26 +10,40 @@ class Piece:
         self.backward_steps = backward_steps  # Número de casillas que avanza en la vuelta
 
         self.direction = False  # Indica si la direccion de la pieza 
-        self.movement_info = {} # Información de los movimientos realizados
+        self.movement_info = set() # Información de los movimientos realizados
         self.out_piece = 0 # Si llega a 3 es porque esta afuera
+        self.killed = False
  
     def move(self, board: Board):
-        
-        for _ in range (self.forward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
-            self.check_turn(board)
-            self._move(board)
-            if not self.direction and self.position in board.check_point_backward: break
-            elif self.direction and self.position in board.check_point_forward: break
-        self.restore_piece(board)
+
+        if not self.is_out():
+
+            if not self.direction:
+                for _ in range(self.forward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
+                    self._move(board)
+                    self.check_turn(board)
+                    if self.check_kill(): break
+                    if not self.direction and self.position in board.check_point_backward: break # Stop si acaba de llegar a un checkpoint
+                    elif self.direction and self.position in board.check_point_forward: break
+            else:
+                for _ in range(self.backward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
+                    self._move(board)
+                    self.check_turn(board)
+                    if self.check_kill(): break
+                    if not self.direction and self.position in board.check_point_backward: break # Stop si acaba de llegar a un checkpoint
+                    elif self.direction and self.position in board.check_point_forward: break
+                
+            self.restore_piece(board)
 
     def _move(self, board: Board):
         row, col = self.position
         advance_or_regres = 1 if not self.direction else -1 # Avanza o retrocede 
 
         if self.player == 0:  # Movimiento horizontal
-            for i in range(1, 10):
-                self.movement_info.add(row, col)
-                col = col + i*advance_or_regres
+            for i in range(1, 10): # Solo es un rango
+                self.movement_info.add((row, col))
+                col = col + 1*advance_or_regres
+                if i>1: self.killed = True
                 if board.grid[row][col] is None:
                     self.position = (row, col)
 
@@ -37,8 +51,9 @@ class Piece:
 
         elif self.player == 1:  # Movimiento vertical
             for i in range(1, 10):
-                self.movement_info.add(row, col)
-                row = row + i*advance_or_regres
+                self.movement_info.add((row, col))
+                row = row + 1*advance_or_regres
+                if i>1: self.killed = True
                 if board.grid[row][col] is None:
                     self.position = (row, col)
                     break
@@ -46,33 +61,52 @@ class Piece:
     def check_turn(self, board):
         # Verificar si tiene que cambiar de direccion.
         if not self.direction:
-            if self.position in board.check_point_backward:
-                self.turn(board)
-    def turn(self, board):
+            if self.position in board.check_point_backward: # Verificar si llego a un checkpoint
+                self.direction_change(board)  
+        else:
+            if self.position in board.check_point_forward:
+                self.direction_change(board)
+
+    def check_kill(self):
+        if self.killed:  self.killed = False; return True
+        else: False
+    def direction_change(self, board):
         # Gira la pieza cuando llega al final del carril
         self.out_piece += 1
         self.direction = True
 
-    def restore_piece(self, board: Board):
-        row, col = self.position
-        if self.player == 0:
-            for piece in board.pieces_p2:
-                check_point = 0 if not piece.direction else 7
-                if piece.position in self.movement_info:
-                    piece.position = (row,check_point)
-                    
-        if self.player == 1:
-            for piece in board.pieces_p1:
-                check_point = 0 if not piece.direction else 7
-                if piece.position in self.movement_info:
-                    piece.position = (check_point,col)
-
-    def check_out_piece(self,board):
-        if self.out_piece == 3:
+        if self.out_piece == 2:
             if self.player == 0:
                 board.out_pieces_p1 +=1
             elif self.player == 1:
                  board.out_pieces_p2 +=1
+
+
+    def restore_piece(self, board: Board):
+        #row, col = self.position
+        if self.player == 0:
+            for piece in board.pieces_p2:
+                row, col = piece.position
+                check_point = 0 if not piece.direction else 7
+                if piece.position in self.movement_info:
+                    piece.position = (check_point,col)
+                    
+        if self.player == 1:
+            for piece in board.pieces_p1:
+                row, col = piece.position
+                check_point = 0 if not piece.direction else 7
+                if piece.position in self.movement_info:
+                    piece.position = (row,check_point)
+
+        self.movement_info = set()
+
+    def is_out(self) -> bool:
+        """Comprueba si la pieza está fuera del tablero."""
+        if self.out_piece >= 2:
+            self.is_active = False  # Marca la pieza como inactiva si está fuera
+            print(f"Pieza del Jugador {self.player + 1} ha salido del tablero.")
+            return True
+        return False
 
 
 
@@ -89,27 +123,37 @@ class Board:
         # Inicia un tablero vacío de 7x7
         self.grid = [[None for _ in range(7)] for _ in range(7)]
         # Configura las piezas de cada jugador
-        self.pieces_p1 = [Piece(0, (i + 1, 0), steps_p1  , steps_p2) for i in range(5)]
-        self.pieces_p2 = [Piece(1, (0, i + 1), steps_p2 , steps_p1) for i in range(5)]
+        self.pieces_p1 = [Piece(0, (i + 1, 0), steps_p1[i]  , steps_p2[i]) for i in range(5)]
+        self.pieces_p2 = [Piece(1, (0, i + 1), steps_p2[i] , steps_p1[i]) for i in range(5)]
         # Posiciones clave en el tablero
         self.check_point_forward = {(i, 0) for i in range(1, 7)} | {(0, j) for j in range(1, 7)}
-        self.check_point_backward = {(i, 7) for i in range(1, 7)} | {(7, j) for j in range(1, 7)}
-
-        
-        # Coloca las piezas en la posición inicial
-        for i, piece in enumerate(self.pieces_p1):
-            self.grid[i + 1][0] = piece  # (row, column)
-        for i, piece in enumerate(self.pieces_p2):
-            self.grid[0][i + 1] = piece
+        self.check_point_backward = {(i, 6) for i in range(1, 7)} | {(6, j) for j in range(1, 7)}
+        # Coloca las piezas iniciales en la cuadrícula
+        self.update_grid()  
 
     def is_win(self, player: int) -> bool:
         if self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4: return True
         else: return False
 
+    def update_grid(self):
+        """Reinicia y actualiza el tablero con las posiciones actuales de las piezas."""
+        # Reiniciar la cuadrícula vacía
+        self.grid = [[None for _ in range(7)] for _ in range(7)]
+        
+        # Colocar las piezas del jugador 1 en la cuadrícula
+        for piece in self.pieces_p1:
+            row, col = piece.position
+            self.grid[row][col] = piece
+        
+        # Colocar las piezas del jugador 2 en la cuadrícula
+        for piece in self.pieces_p2:
+            row, col = piece.position
+            self.grid[row][col] = piece
+
     def display(self):
         # Muestra el estado actual del tablero
         for row in self.grid:
-            print(" | ".join(['X' if piece is not None else '.' for piece in row]))
+            print(" | ".join([('A' if piece.player == 0 else 'R') if piece is not None else '.' for piece in row]))
             print('-' * 29)
 
 # Representa el juego en sí
@@ -119,18 +163,33 @@ class SquadroGame:
         self.current_player = 0  # Comienza el jugador 1
 
     def play_turn(self):
-        # Lógica para que el jugador actual haga un movimiento
-        pass
+        # Obtener las piezas del jugador actual
+        current_pieces = self.board.pieces_p1 if self.current_player == 0 else self.board.pieces_p2
+
+        
+        print(f"\n\tTurno del Jugador {self.current_player + 1}\n\n")
+        self.board.display()
+        # Solicitar al jugador que seleccione una pieza (en este caso, elegimos automáticamente para simplificar)
+        selected_piece = None
+        while selected_piece is None:
+            piece_idx = int(input(f"Selecciona una pieza para mover (1-{len(current_pieces)}): ")) - 1
+            if 0 <= piece_idx < len(current_pieces):
+                selected_piece = current_pieces[piece_idx]
+
+
+        selected_piece.move(self.board)
+        self.board.update_grid()
 
     def start(self):
         while True:
-            self.board.display()
+            # self.board.display()
             self.play_turn()
             if self.board.is_win(self.current_player):
                 print(f"Jugador {self.current_player + 1} ha ganado!")
                 break
             # Cambiar de jugador
             self.current_player = 1 - self.current_player
+
 
 # Inicia el juego
 if __name__ == "__main__":
