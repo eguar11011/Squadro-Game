@@ -81,16 +81,16 @@ class Piece:
 # Representa el tablero del juego
 class Board:
     def __init__(self):
-        _steps_p1 = [3, 1 ,2, 1, 3]
-        _steps_p2 = [1, 3 ,2, 3, 1]
+        steps_p1 = [3, 1 ,2, 1, 3]
+        steps_p2 = [1, 3 ,2, 3, 1]
         
         self.out_pieces_p1 = 0
         self.out_pieces_p2 = 0
         # Inicia un tablero vacío de 7x7
         self.grid = [[None for _ in range(7)] for _ in range(7)]
         # Configura las piezas de cada jugador
-        self.pieces_p1 = [Piece(0, (i + 1, 0), _steps_p1  , _steps_p2) for i in range(5)]
-        self.pieces_p2 = [Piece(1, (0, i + 1), _steps_p2 , _steps_p1) for i in range(5)]
+        self.pieces_p1 = [Piece(0, (i + 1, 0), steps_p1  , steps_p2) for i in range(5)]
+        self.pieces_p2 = [Piece(1, (0, i + 1), steps_p2 , steps_p1) for i in range(5)]
         # Posiciones clave en el tablero
         self.check_point_forward = {(i, 0) for i in range(1, 7)} | {(0, j) for j in range(1, 7)}
         self.check_point_backward = {(i, 7) for i in range(1, 7)} | {(7, j) for j in range(1, 7)}
