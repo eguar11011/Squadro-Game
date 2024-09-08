@@ -151,10 +151,37 @@ class Board:
             self.grid[row][col] = piece
 
     def display(self):
-        # Muestra el estado actual del tablero
-        for row in self.grid:
-            print(" | ".join([('A' if piece.player == 0 else 'R') if piece is not None else '.' for piece in row]))
-            print('-' * 29)
+        # Movimientos del tablero por jugador
+        steps_p1 = [3, 1, 2, 1, 3]  
+        steps_p2 = [1, 3, 2, 3, 1]  
+
+        # Parte superior - Movimientos forwards jugador dos
+        print("\t" + "   ".join(map(str, steps_p2)))
+
+        # Piezas de la parte superior
+        print("x | " + " | ".join(['↓' if piece is not None and piece.player == 1 and not piece.direction else '↑' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in self.grid[0]]) + " | x")
+        print("-" * 29)
+
+        # Piezas de cada fila
+        for i in range(1, 6):
+            row = f"{steps_p1[i - 1]} | "  # Parte lateral izquierdo - Movimientos Forward jugador uno
+            # Agregar pieza en su posicion actual o colocar un punto '.'
+            row += " | ".join([('→' if piece is not None and piece.player == 0 and not piece.direction else
+                                '←' if piece is not None and piece.player == 0 and piece.direction else
+                                '↓' if piece is not None and piece.player == 1 and not piece.direction else
+                                '↑' if piece is not None and piece.player == 1 and piece.direction else '.') 
+                            for piece in self.grid[i]])
+            row += f" | {steps_p1[i - 1]}"  # Parte lateral derecho - Movimientos Backward jugador uno
+            print(row)
+            print("-" * 29)
+
+        # Imprimir la fila inferior del tablero
+        print("x | " + " | ".join(['.' for _ in range(7)]) + " | x")
+
+        # Fila inferior - Movimientos Backward jugador dos
+        print("\t" + "   ".join(map(str, steps_p1)))
+
+
 
 # Representa el juego en sí
 class SquadroGame:
@@ -167,7 +194,7 @@ class SquadroGame:
         current_pieces = self.board.pieces_p1 if self.current_player == 0 else self.board.pieces_p2
 
         
-        print(f"\n\tTurno del Jugador {self.current_player + 1}\n\n")
+        print(f"\n\tTurno del Jugador {self.current_player + 1}\n")
         self.board.display()
         # Solicitar al jugador que seleccione una pieza (en este caso, elegimos automáticamente para simplificar)
         selected_piece = None
