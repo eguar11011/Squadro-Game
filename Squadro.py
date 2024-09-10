@@ -16,7 +16,7 @@ class Piece:
  
     def move(self, board: Board):
 
-        if not self.is_out():
+        if is_out:=self.is_out():  
 
             if not self.direction:
                 for _ in range(self.forward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
@@ -34,6 +34,9 @@ class Piece:
                     elif self.direction and self.position in board.check_point_forward: break
                 
             self.restore_piece(board)
+
+            return is_out
+        else: return is_out
 
     def _move(self, board: Board):
         row, col = self.position
@@ -105,8 +108,8 @@ class Piece:
         if self.out_piece >= 2:
             self.is_active = False  # Marca la pieza como inactiva si está fuera
             print(f"Pieza del Jugador {self.player + 1} ha salido del tablero.")
-            return True
-        return False
+            return False
+        return True
 
 
 
@@ -198,13 +201,11 @@ class SquadroGame:
         self.board.display()
         # Solicitar al jugador que seleccione una pieza (en este caso, elegimos automáticamente para simplificar)
         selected_piece = None
-        while selected_piece is None:
+        while True:
             piece_idx = int(input(f"Selecciona una pieza para mover (1-{len(current_pieces)}): ")) - 1
             if 0 <= piece_idx < len(current_pieces):
                 selected_piece = current_pieces[piece_idx]
-
-
-        selected_piece.move(self.board)
+            if selected_piece.move(self.board) and (selected_piece is not None): break
         self.board.update_grid()
 
     def start(self):
