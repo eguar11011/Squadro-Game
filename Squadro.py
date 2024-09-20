@@ -174,12 +174,12 @@ class Board:
                                 '↓' if piece is not None and piece.player == 1 and not piece.direction else
                                 '↑' if piece is not None and piece.player == 1 and piece.direction else '.') 
                             for piece in self.grid[i]])
-            row += f" | {steps_p1[i - 1]}"  # Parte lateral derecho - Movimientos Backward jugador uno
+            row += f" | {steps_p2[i - 1]}"  # Parte lateral derecho - Movimientos Backward jugador uno
             print(row)
             print("-" * 29)
 
         # Imprimir la fila inferior del tablero
-        print("x | " + " | ".join(['.' for _ in range(7)]) + " | x")
+        print("x | " + " | ".join(['↓' if piece is not None and piece.player == 1 and not piece.direction else '↑' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in self.grid[6]]) + " | x")
 
         # Fila inferior - Movimientos Backward jugador dos
         print("\t" + "   ".join(map(str, steps_p1)))
