@@ -1,9 +1,10 @@
-from __future__ import annotations
-from typing import List, Tuple
-#from board import Board
-# Representa una pieza en el juego
+from typing import List, Tuple, NewType
+
+Board = NewType('Board', object)
+
 class Piece:
     def __init__(self, player: int, position: Tuple[int, int], forward_steps: int, backward_steps: int):
+
         self.player = player  # 0 o 1 para indicar el jugador
         self.position = position  # Posición actual de la pieza en el tablero (fila, columna)
         self.forward_steps = forward_steps  # Número de casillas que avanza en la ida
@@ -13,53 +14,54 @@ class Piece:
         self.movement_info = set() # Información de los movimientos realizados
         self.out_piece = 0 # Si llega a 3 es porque esta afuera
         self.killed = False
- 
+
     def move(self, board: Board):
-
-        if is_out:=self.is_out():  
-
+        if self.is_out():
             if not self.direction:
-                for _ in range(self.forward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
-                    self._move(board)
-                    self.check_turn(board)
-                    if self.check_kill(): break
-                    if not self.direction and self.position in board.check_point_backward: break # Stop si acaba de llegar a un checkpoint
-                    elif self.direction and self.position in board.check_point_forward: break
+                self._move_forward(board)
             else:
-                for _ in range(self.backward_steps): # Movemos de un solo salto para poder verificar que la casilla este vacia
-                    self._move(board)
-                    self.check_turn(board)
-                    if self.check_kill(): break
-                    if not self.direction and self.position in board.check_point_backward: break # Stop si acaba de llegar a un checkpoint
-                    elif self.direction and self.position in board.check_point_forward: break
-                
-            self.restore_piece(board)
+                self._move_backward(board)
 
-            return is_out
-        else: return is_out
+            self.restore_piece(board)
+            return True
+        return False
+
+    def _move_forward(self, board: Board):
+        for _ in range(self.forward_steps):
+            self._move(board)
+            self.check_turn(board)
+            if self.check_kill(): break
+            if self.position in board.check_point_backward: break
+
+    def _move_backward(self, board: Board):
+        for _ in range(self.backward_steps):
+            self._move(board)
+            self.check_turn(board)
+            if self.check_kill(): break
+            if self.position in board.check_point_forward: break
+
 
     def _move(self, board: Board):
+        #self.movement_info.add(self.position)
+        advance_or_regress = 1 if not self.direction else -1
+
+        if self.player == 0:  # Horizontal movement
+            self._move_piece(board, (0, advance_or_regress))
+        elif self.player == 1:  # Vertical movement
+            self._move_piece(board, (advance_or_regress, 0))
+
+    def _move_piece(self, board: Board, delta: Tuple[int, int]):
         row, col = self.position
-        advance_or_regres = 1 if not self.direction else -1 # Avanza o retrocede 
+        for i in range(1, 10):  # Limit movement to 10 squares
+            self.movement_info.add((row, col))
+            row, col = row + delta[0], col + delta[1]
+            if i > 1:
+                self.killed = True
+            if board.grid[row][col] is None:
+                self.position = (row, col)
+                break
 
-        if self.player == 0:  # Movimiento horizontal
-            for i in range(1, 10): # Solo es un rango
-                self.movement_info.add((row, col))
-                col = col + 1*advance_or_regres
-                if i>1: self.killed = True
-                if board.grid[row][col] is None:
-                    self.position = (row, col)
 
-                    break
-
-        elif self.player == 1:  # Movimiento vertical
-            for i in range(1, 10):
-                self.movement_info.add((row, col))
-                row = row + 1*advance_or_regres
-                if i>1: self.killed = True
-                if board.grid[row][col] is None:
-                    self.position = (row, col)
-                    break
     
     def check_turn(self, board):
         # Verificar si tiene que cambiar de direccion.
