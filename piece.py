@@ -92,14 +92,14 @@ class Piece:
         if self.player == 0:
             for piece in board.pieces_p2:
                 row, col = piece.position
-                check_point = 0 if not piece.direction else 7
+                check_point = 0 if not piece.direction else 6
                 if piece.position in self.movement_info:
                     piece.position = (check_point,col)
                     
         if self.player == 1:
             for piece in board.pieces_p1:
                 row, col = piece.position
-                check_point = 0 if not piece.direction else 7
+                check_point = 0 if not piece.direction else 6
                 if piece.position in self.movement_info:
                     piece.position = (row,check_point)
 
