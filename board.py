@@ -50,21 +50,20 @@ class BoardRenderer:
         print("\t" + "   ".join(map(str, steps_p2)))
 
         # Piezas de la parte superior
-        print("x | " + " | ".join(['↓' if piece is not None and piece.player == 1 and not piece.direction else '↑' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[0]]) + " | x")
+        print("x | " + " | ".join(['\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[0]]) + " | x")
         print("-" * 29)
-
         # Piezas de cada fila
         for i in range(1, 6):
             row = f"{steps_p1[i - 1]} | "  # Parte lateral izquierdo - Movimientos Forward jugador uno
-            row += " | ".join([('→' if piece is not None and piece.player == 0 and not piece.direction else
-                                '←' if piece is not None and piece.player == 0 and piece.direction else
-                                '↓' if piece is not None and piece.player == 1 and not piece.direction else
-                                '↑' if piece is not None and piece.player == 1 and piece.direction else '.') 
+            row += " | ".join([('\033[31m→\033[0m' if piece is not None and piece.player == 0 and not piece.direction else
+                                '\033[31m←\033[0m' if piece is not None and piece.player == 0 and piece.direction else
+                                '\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else
+                                '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.') 
                             for piece in board.grid[i]])
             row += f" | {steps_p2[i - 1]}"  # Parte lateral derecho - Movimientos Backward jugador uno
             print(row)
             print("-" * 29)
 
         # Imprimir la fila inferior del tablero
-        print("x | " + " | ".join(['↓' if piece is not None and piece.player == 1 and not piece.direction else '↑' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[6]]) + " | x")
+        print("x | " + " | ".join(['\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[6]]) + " | x")
         print("\t" + "   ".join(map(str, steps_p1)))
