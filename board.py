@@ -49,21 +49,39 @@ class BoardRenderer:
         # Parte superior - Movimientos forwards jugador dos
         print("\t" + "   ".join(map(str, steps_p2)))
 
+
+
         # Piezas de la parte superior
-        print("x | " + " | ".join(['\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[0]]) + " | x")
+        print("x | " + " | ".join([get_colored_piece(piece) for piece in board.grid[0]]) + " | x")
         print("-" * 29)
+
         # Piezas de cada fila
         for i in range(1, 6):
             row = f"{steps_p1[i - 1]} | "  # Parte lateral izquierdo - Movimientos Forward jugador uno
-            row += " | ".join([('\033[31m→\033[0m' if piece is not None and piece.player == 0 and not piece.direction else
-                                '\033[31m←\033[0m' if piece is not None and piece.player == 0 and piece.direction else
-                                '\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else
-                                '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.') 
-                            for piece in board.grid[i]])
+            row += " | ".join([get_colored_piece(piece) for piece in board.grid[i]])
             row += f" | {steps_p2[i - 1]}"  # Parte lateral derecho - Movimientos Backward jugador uno
             print(row)
             print("-" * 29)
 
         # Imprimir la fila inferior del tablero
-        print("x | " + " | ".join(['\033[33m↓\033[0m' if piece is not None and piece.player == 1 and not piece.direction else '\033[33m↑\033[0m' if piece is not None and piece.player == 1 and piece.direction else '.' for piece in board.grid[6]]) + " | x")
+        print("x | " + " | ".join([get_colored_piece(piece) for piece in board.grid[6]]) + " | x")
         print("\t" + "   ".join(map(str, steps_p1)))
+
+
+def get_colored_piece(piece):
+    if piece is None:
+        return '.'
+    
+    # Jugador 1
+    if piece.player == 1:
+        if piece.direction:
+            return '\033[33m↑\033[0m'  # Jugador 1 hacia arriba
+        else:
+            return '\033[33m↓\033[0m'  # Jugador 1 hacia abajo
+    
+    # Jugador 0
+    elif piece.player == 0:
+        if piece.direction:
+            return '\033[31m←\033[0m'  # Jugador 0 hacia la izquierda
+        else:
+            return '\033[31m→\033[0m'  # Jugador 0 hacia la derecha
