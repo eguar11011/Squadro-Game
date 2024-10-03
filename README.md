@@ -1,12 +1,15 @@
-# Application of Reinforcement Learning in Board Games - Squadro Game
+# Continual Learning in Reinforcement Learning
 
 ## Project Objectives
 
-This project aims to develop a **board game** programmed from scratch, utilizing concepts of **reinforcement learning** (RL) and conducting various **experiments** to evaluate the performance and complexity of the applied algorithms. The main objectives include:
+The main objective of this project is to investigate the concept of **continual learning** within the field of **reinforcement learning (RL)** applied to board games, specifically to the game *Squadro* and its variants. The key objectives include:
 
-- **Developing** a functional board game.
-- **Learning** and applying reinforcement learning techniques.
-- **Exploring** different experiments to evaluate the system's behavior and algorithms.
+- **Develop** a functional version of the board game *Squadro* that serves as an experimental platform.
+- **Apply** continual learning techniques to enable the agent to learn continuously over multiple games, without forgetting previously acquired knowledge.
+- **Evaluate** how the use of continual learning improves the agent's ability to adapt to variations of the game, such as rule changes or board size adjustments.
+- **Conduct experiments** to measure the agent's performance and the computational complexity of the system under different continual learning conditions.
+- **Explore** how continual learning can optimize game strategies, allowing the agent to improve over time without requiring complete retraining.
+
 
 ---
 
