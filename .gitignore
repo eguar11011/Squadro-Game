@@ -1,3 +1,6 @@
 *.csv
 
 squadro-analysis-sample.ipynb
+Squadro.py
+.vscode
+__pycache__
