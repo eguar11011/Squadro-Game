@@ -19,10 +19,28 @@ class SquadroGame:
         # Solicitar al jugador que seleccione una pieza (en este caso, elegimos automáticamente para simplificar)
         selected_piece = None
         while True:
-            piece_idx = int(input(f"Selecciona una pieza para mover (1-{len(current_pieces)}): ")) - 1
-            if 0 <= piece_idx < len(current_pieces):
-                selected_piece = current_pieces[piece_idx]
-            if selected_piece.move(self.board) and (selected_piece is not None): break
+            try:
+                # Solicitar entrada y convertir a entero
+                piece_idx = int(input(f"Selecciona una pieza para mover (1-{len(current_pieces)}): ")) - 1
+                
+                # Verificar que el índice esté dentro del rango permitido
+                if 0 <= piece_idx < len(current_pieces):
+                    selected_piece = current_pieces[piece_idx]
+                else:
+                    print(f"Error: Elige un número entre 1 y {len(current_pieces)}.")
+                    continue
+                
+                # Verificar que selected_piece no sea None y que el movimiento sea válido
+                if selected_piece is not None and selected_piece.move(self.board):
+                    break  # Si el movimiento es válido, salir del bucle
+                else:
+                    print("Error: No se puede mover la pieza seleccionada. Intenta otra vez.")
+            
+            except ValueError:
+                # Manejar el caso donde la entrada no es un número válido
+                print("Error: Ingresa un número válido.")
+
+    
         self.board.update_grid()
 
     def start(self):
