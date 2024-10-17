@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import List, Tuple
 from piece import Piece
 
 class Board:
@@ -10,25 +9,35 @@ class Board:
     STEPS_P2 = [1, 3, 2, 3, 1]
 
     def __init__(self):
-        
+        """
+        Initializes the game board and sets up the pieces for both players.
+
+        Attributes:
+            out_pieces_p1 (int): Counter for Player 1's pieces that have been removed from the board.
+            out_pieces_p2 (int): Counter for Player 2's pieces that have been removed from the board.
+            grid (List[List[Optional[Piece]]]): A 7x7 game board initialized with None, representing empty spaces.
+            pieces_p1 (List[Piece]): A list of Player 1's pieces, each placed in its starting position with corresponding movement steps.
+            pieces_p2 (List[Piece]): A list of Player 2's pieces, each placed in its starting position with corresponding movement steps.
+            check_point_forward (Set[Tuple[int, int]]): Set of board positions representing checkpoints for forward movement.
+            check_point_backward (Set[Tuple[int, int]]): Set of board positions representing checkpoints for backward movement.
+
+        The method sets up an empty 7x7 board, initializes the pieces for both players, and defines key checkpoints for forward and backward movement. 
+        It then calls `update_grid` to place the pieces on the board.
+        """
         self.out_pieces_p1 = 0
         self.out_pieces_p2 = 0
-        # Inicia un tablero vacío de 7x7
         self.grid = [[None for _ in range(self.BOARD_SIZE)] for _ in range(self.BOARD_SIZE)]
         self.pieces_p1 = [Piece(0, (i + 1, 0), self.STEPS_P1[i], self.STEPS_P2[i]) for i in range(5)]
         self.pieces_p2 = [Piece(1, (0, i + 1), self.STEPS_P2[i], self.STEPS_P1[i]) for i in range(5)]
-
-        # Posiciones clave en el tablero
         self.check_point_forward = {(i, 0) for i in range(1, 7)} | {(0, j) for j in range(1, 7)}
         self.check_point_backward = {(i, 6) for i in range(1, 7)} | {(6, j) for j in range(1, 7)}
-        # Coloca las piezas iniciales en la cuadrícula
-        self.update_grid()  
+        self.update_grid  
         
     @property
     def is_win(self) -> bool:
         return self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4
 
-
+    @property
     def update_grid(self):
         """Reinicia y actualiza el tablero con las posiciones actuales de las piezas."""
         # Reiniciar la cuadrícula vacía
