@@ -41,7 +41,7 @@ class SquadroGame:
                 print("Error: Ingresa un número válido.")
 
     
-        self.board.update_grid
+        self.board.update_grid()
 
     def start(self):
         

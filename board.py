@@ -31,13 +31,13 @@ class Board:
         self.pieces_p2 = [Piece(1, (0, i + 1), self.STEPS_P2[i], self.STEPS_P1[i]) for i in range(5)]
         self.check_point_forward = {(i, 0) for i in range(1, 7)} | {(0, j) for j in range(1, 7)}
         self.check_point_backward = {(i, 6) for i in range(1, 7)} | {(6, j) for j in range(1, 7)}
-        self.update_grid  
+        self.update_grid()  
         
     @property
     def is_win(self) -> bool:
         return self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4
 
-    @property
+    
     def update_grid(self):
         """Reinicia y actualiza el tablero con las posiciones actuales de las piezas."""
         # Reiniciar la cuadrícula vacía
