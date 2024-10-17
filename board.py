@@ -69,19 +69,35 @@ class BoardRenderer:
 
 
 def get_colored_piece(piece):
+    """
+    Returns a string representing the player's piece with appropriate color and direction.
+    
+    Player 1's pieces (code 033) are displayed in yellow, and Player 2's pieces (code 031) are displayed in red.
+    
+    - Player 1: 
+        - Upward direction is shown as '↑' (yellow).
+        - Downward direction is shown as '↓' (yellow).
+    
+    - Player 0 (Player 2): 
+        - Left direction is shown as '←' (red).
+        - Right direction is shown as '→' (red).
+    
+    If there is no piece, a '.' is returned.
+    
+    Args:
+        piece (Piece): The piece object to be represented.
+
+    Returns:
+        str: A string with the colored symbol for the piece.
+    
+    """
     if piece is None:
         return '.'
+
+    colors = {1: '\033[33m', 0: '\033[31m'}
+    directions = {
+        (1, True): '↑', (1, False): '↓',
+        (0, True): '←', (0, False): '→'
+    }
     
-    # Jugador 1
-    if piece.player == 1:
-        if piece.direction:
-            return '\033[33m↑\033[0m'  # Jugador 1 hacia arriba
-        else:
-            return '\033[33m↓\033[0m'  # Jugador 1 hacia abajo
-    
-    # Jugador 0
-    elif piece.player == 0:
-        if piece.direction:
-            return '\033[31m←\033[0m'  # Jugador 0 hacia la izquierda
-        else:
-            return '\033[31m→\033[0m'  # Jugador 0 hacia la derecha
+    return f"{colors[piece.player]}{directions[(piece.player, piece.direction)]}\033[0m"
