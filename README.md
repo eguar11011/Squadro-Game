@@ -1,5 +1,12 @@
 # Continual Learning in Reinforcement Learning
 
+## How to Play
+
+To play, simply run the game.py file. There are no additional installations or dependencies required, you just need python, so it's easy to get started. The entire project is designed to work out of the box, so you can start playing right away without worrying about setting up external libraries or tools.
+```bash
+python game.py
+```
+
 ## Project Objectives
 
 The main objective of this project is to investigate the concept of **continual learning** within the field of **reinforcement learning (RL)** applied to board games, specifically to the game *Squadro* and its variants. The key objectives include:
