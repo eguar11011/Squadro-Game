@@ -3,26 +3,31 @@ from typing import List, Tuple
 from piece import Piece
 
 class Board:
+    
+    BOARD_SIZE = 7
+    WINNING_PIECES = 4
+    STEPS_P1 = [3, 1, 2, 1, 3]
+    STEPS_P2 = [1, 3, 2, 3, 1]
+
     def __init__(self):
-        steps_p1 = [3, 1 ,2, 1, 3]
-        steps_p2 = [1, 3 ,2, 3, 1]
         
         self.out_pieces_p1 = 0
         self.out_pieces_p2 = 0
         # Inicia un tablero vacío de 7x7
-        self.grid = [[None for _ in range(7)] for _ in range(7)]
-        # Configura las piezas de cada jugador
-        self.pieces_p1 = [Piece(0, (i + 1, 0), steps_p1[i]  , steps_p2[i]) for i in range(5)]
-        self.pieces_p2 = [Piece(1, (0, i + 1), steps_p2[i] , steps_p1[i]) for i in range(5)]
+        self.grid = [[None for _ in range(self.BOARD_SIZE)] for _ in range(self.BOARD_SIZE)]
+        self.pieces_p1 = [Piece(0, (i + 1, 0), self.STEPS_P1[i], self.STEPS_P2[i]) for i in range(5)]
+        self.pieces_p2 = [Piece(1, (0, i + 1), self.STEPS_P2[i], self.STEPS_P1[i]) for i in range(5)]
+
         # Posiciones clave en el tablero
         self.check_point_forward = {(i, 0) for i in range(1, 7)} | {(0, j) for j in range(1, 7)}
         self.check_point_backward = {(i, 6) for i in range(1, 7)} | {(6, j) for j in range(1, 7)}
         # Coloca las piezas iniciales en la cuadrícula
         self.update_grid()  
+        
+    @property
+    def is_win(self) -> bool:
+        return self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4
 
-    def is_win(self, player: int) -> bool:
-        if self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4: return True
-        else: return False
 
     def update_grid(self):
         """Reinicia y actualiza el tablero con las posiciones actuales de las piezas."""

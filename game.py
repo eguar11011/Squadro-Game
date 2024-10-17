@@ -49,7 +49,7 @@ class SquadroGame:
         input("Are you ready?")
         while True:
             self.play_turn()
-            if self.board.is_win(self.current_player):
+            if self.board.is_win:
                 print(f"Jugador {self.current_player + 1} ha ganado!")
                 break
             # Cambiar de jugador
