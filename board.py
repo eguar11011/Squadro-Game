@@ -1,5 +1,6 @@
 from __future__ import annotations
 from piece import Piece
+from typing import List
 
 class Board:
     
@@ -38,20 +39,26 @@ class Board:
         return self.out_pieces_p1 == 4 or self.out_pieces_p2 == 4
 
     
-    def update_grid(self):
-        """Reinicia y actualiza el tablero con las posiciones actuales de las piezas."""
-        # Reiniciar la cuadrícula vacía
-        self.grid = [[None for _ in range(7)] for _ in range(7)]
+    def update_grid(self) -> None:
+        """
+        Resets and updates the grid with the current positions of all pieces.
+        """
+        self.grid = [[None] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]
         
-        # Colocar las piezas del jugador 1 en la cuadrícula
-        for piece in self.pieces_p1:
+        self.place_pieces_on_grid(self.pieces_p1)
+        self.place_pieces_on_grid(self.pieces_p2)
+
+    def place_pieces_on_grid(self, pieces: List[Piece]) -> None:
+        """
+        Places the given pieces on the grid based on their positions.
+
+        Args:
+            pieces (List[Piece]): A list of pieces to place on the grid.
+        """
+        for piece in pieces:
             row, col = piece.position
             self.grid[row][col] = piece
-        
-        # Colocar las piezas del jugador 2 en la cuadrícula
-        for piece in self.pieces_p2:
-            row, col = piece.position
-            self.grid[row][col] = piece
+
 
 
 class BoardRenderer:
